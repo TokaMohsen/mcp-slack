@@ -135,12 +135,12 @@ Add the following to your `claude_desktop_config.json`:
         "SLACK_TEAM_ID",
         "-e",
         "SLACK_CHANNEL_IDS",
-        "mcp/slack"
+        "slack-mcp"
       ],
       "env": {
         "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
-        "SLACK_TEAM_ID": "T01234567",
-        "SLACK_CHANNEL_IDS": "C01234567, C76543210"
+        "SLACK_TEAM_ID": "T/Exxxxxxx",
+        "SLACK_CHANNEL_IDS": "Cxxxxxx, Cxxxxx"
       }
     }
   }

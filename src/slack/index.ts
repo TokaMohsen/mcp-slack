@@ -31,6 +31,11 @@ interface AddReactionArgs {
   reaction: string;
 }
 
+interface deleteMessageArgs {
+  channel_id: string;
+  timestamp: string;
+}
+
 interface GetChannelHistoryArgs {
   channel_id: string;
   limit?: number;
