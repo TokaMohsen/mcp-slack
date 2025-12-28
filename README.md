@@ -24,15 +24,66 @@ This Slack MCP server provides the following tools:
 - Slack Bot Token with appropriate scopes
 - Slack Team ID
 
+To get Slack Bot Token:
+
+1. Create a Slack App:
+   - Visit the [Slack Apps page](https://api.slack.com/apps)
+   - Click "Create New App"
+   - Choose "From scratch"
+   - Name your app and select your workspace
+
+2. Configure Bot Token Scopes:
+   Navigate to "OAuth & Permissions" and add these scopes:
+   - `channels:history` - View messages and other content in public channels
+   - `channels:read` - View basic channel information
+   - `chat:write` - Send messages as the app
+   - `reactions:write` - Add emoji reactions to messages
+   - `users:read` - View users and their basic information
+   - `users.profile:read` - View detailed profiles about users
+
+4. Install App to Workspace:
+   - Click "Install to Workspace" and authorize the app
+   - Save the "Bot User OAuth Token" that starts with `xoxb-`
+
+5. Get your Team ID (starts with a `T`) by following [this guidance](https://slack.com/help/articles/221769328-Locate-your-Slack-URL-or-ID#find-your-workspace-or-org-id)
+
+
 ## Environment Variables
 
 - `SLACK_BOT_TOKEN` - Your Slack bot token (required)
 - `SLACK_TEAM_ID` - Your Slack team/workspace ID (required)
 - `SLACK_CHANNEL_IDS` - Optional comma-separated list of channel IDs to limit access to specific channels
 
+
+This Slack MCP server is designed to be used with AI assistants through IDE integration.
+
+Tip
+
+For Claude Desktop: Locate and edit the configuration file directly:
+
+Windows: %APPDATA%\Claude\claude_desktop_config.json
+macOS: ~/Library/Application Support/Claude/claude_desktop_config.json
+Linux: ~/.config/Claude/claude_desktop_config.json
+For Cursor: Open Settings → MCP → + Add new global MCP server
+
 ## Installation
 
-### Using NPX (Recommended)
+### Using NPX
+
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "command": "npx",
+      "args": ["-y", "@tokamohsen/mcp-slack"],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
+        "SLACK_TEAM_ID": "T01234567"
+      }
+    }
+  }
+}
+```
 
 No installation needed! Just configure Claude Desktop or VS Code to use:
 
@@ -61,23 +112,6 @@ Run the container:
 
 ```bash
 docker run -e SLACK_BOT_TOKEN=your_token -e SLACK_TEAM_ID=your_team_id tokamohsen/mcp-slack
-```
-
-## Configuration Examples
-
-```json
-{
-  "mcpServers": {
-    "slack": {
-      "command": "npx",
-      "args": ["-y", "@tokamohsen/mcp-slack"],
-      "env": {
-        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
-        "SLACK_TEAM_ID": "T01234567"
-      }
-    }
-  }
-}
 ```
 
 ```json
