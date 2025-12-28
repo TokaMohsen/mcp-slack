@@ -99,7 +99,7 @@ MCP Server for the Slack API, enabling Claude to interact with Slack workspaces.
 
 Add the following to your `claude_desktop_config.json`:
 
-#### Using NPX (Recommended - Easiest)
+#### Using NPX 
 
 ```json
 {
@@ -132,25 +132,6 @@ npm install
 npm run build
 ```
 
-Then add to your `claude_desktop_config.json`:
-```json
-{
-  "mcpServers": {
-    "slack": {
-      "command": "node",
-      "args": [
-        "/absolute/path/to/mcp-slack/src/slack/dist/index.js"
-      ],
-      "env": {
-        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
-        "SLACK_TEAM_ID": "T01234567",
-        "SLACK_CHANNEL_IDS": "C01234567, C76543210"
-      }
-    }
-  }
-}
-```
-
 Replace `/absolute/path/to/mcp-slack` with the actual path where you cloned the repository.
 
 #### Docker
@@ -160,7 +141,8 @@ Build the Docker image first:
 docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
 ```
 
-Then add to your `claude_desktop_config.json`:
+## Configuration Examples
+
 ```json
 {
   "mcpServers": {
@@ -188,15 +170,25 @@ Then add to your `claude_desktop_config.json`:
 }
 ```
 
-### Usage with VS Code
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/mcp-slack/src/slack/dist/index.js"
+      ],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
+        "SLACK_TEAM_ID": "T01234567",
+        "SLACK_CHANNEL_IDS": "C01234567, C76543210"
+      }
+    }
+  }
+}
+```
 
-Add the following JSON block to your User Settings (JSON) file in VS Code. You can do this by pressing `Ctrl + Shift + P` and typing `Preferences: Open Settings (JSON)`.
-
-Optionally, you can add it to a file called `.vscode/mcp.json` in your workspace. This will allow you to share the configuration with others.
-
-> Note that the `mcp` key is not needed in the `.vscode/mcp.json` file.
-
-#### Using NPX (Recommended - Easiest)
+#### Using NPX 
 
 ```json
 {
@@ -272,44 +264,6 @@ Then add to your VS Code settings:
 ```
 
 Replace `/absolute/path/to/mcp-slack` with the actual path where you cloned the repository.
-
-#### Docker
-
-Build the Docker image first:
-```bash
-docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
-```
-
-Then add to your VS Code settings:
-```json
-{
-  "mcp": {
-    "inputs": [
-      {
-        "type": "promptString",
-        "id": "slack_bot_token",
-        "description": "Slack Bot Token (starts with xoxb-)",
-        "password": true
-      },
-      {
-        "type": "promptString",
-        "id": "slack_team_id",
-        "description": "Slack Team ID (starts with T)"
-      }
-    ],
-    "servers": {
-      "slack": {
-        "command": "docker",
-        "args": ["run", "-i", "--rm", "slack-mcp"],
-        "env": {
-          "SLACK_BOT_TOKEN": "${input:slack_bot_token}",
-          "SLACK_TEAM_ID": "${input:slack_team_id}"
-        }
-      }
-    }
-  }
-}
-```
 
 ### Environment Variables
 

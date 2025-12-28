@@ -49,11 +49,21 @@ npm install
 npm run build
 ```
 
-## Usage Examples
+### Docker
 
-### Quick Start with Claude Desktop
+Build the Docker image:
 
-Add to your `claude_desktop_config.json`:
+```bash
+docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
+```
+
+Run the container:
+
+```bash
+docker run -e SLACK_BOT_TOKEN=your_token -e SLACK_TEAM_ID=your_team_id tokamohsen/mcp-slack
+```
+
+## Configuration Examples
 
 ```json
 {
@@ -70,20 +80,32 @@ Add to your `claude_desktop_config.json`:
 }
 ```
 
-### Docker
-
-Build the Docker image:
-
-```bash
-docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
+```json
+{
+  "mcpServers": {
+    "slack": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "SLACK_BOT_TOKEN",
+        "-e",
+        "SLACK_TEAM_ID",
+        "-e",
+        "SLACK_CHANNEL_IDS",
+        "tokamohsen/mcp-slack"
+      ],
+      "env": {
+        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
+        "SLACK_TEAM_ID": "T01234567",
+        "SLACK_CHANNEL_IDS": "C01234567, C76543210"
+      }
+    }
+  }
+}
 ```
-
-Run the container:
-
-```bash
-docker run -e SLACK_BOT_TOKEN=your_token -e SLACK_TEAM_ID=your_team_id tokamohsen/mcp-slack
-```
-
 ## License
 
 MIT
