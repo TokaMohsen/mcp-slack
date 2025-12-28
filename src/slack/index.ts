@@ -55,6 +55,15 @@ interface GetUserProfileArgs {
   user_id: string;
 }
 
+// Helper function to normalize timestamp format
+function normalizeTimestamp(timestamp: string): string {
+  // If timestamp doesn't have a period, add it (e.g., "1234567890123456" -> "1234567890.123456")
+  if (!timestamp.includes('.') && timestamp.length >= 10) {
+    return timestamp.slice(0, 10) + '.' + timestamp.slice(10);
+  }
+  return timestamp;
+}
+
 // Tool definitions
 const listChannelsTool: Tool = {
   name: "slack_list_channels",
@@ -107,7 +116,7 @@ const replyToThreadTool: Tool = {
       },
       thread_ts: {
         type: "string",
-        description: "The timestamp of the parent message in the format '1234567890.123456'. Timestamps in the format without the period can be converted by adding the period such that 6 numbers come after it.",
+        description: "The timestamp of the parent message (e.g., '1234567890.123456')",
       },
       text: {
         type: "string",
@@ -130,35 +139,12 @@ const deleteMessageTool: Tool = {
       },
       timestamp: {
         type: "string",
-        description: "The timestamp of the message to delete in the format '1234567890.123456'. Timestamps in the format without the period can be converted by adding the period such that 6 numbers come after it.",
+        description: "The timestamp of the message to delete (e.g., '1234567890.123456')",
       },
     },
     required: ["channel_id", "timestamp"],
   },
 };
-
-// const replyToThreadTool: Tool = {
-//   name: "slack_reply_to_thread",
-//   description: "Reply to a specific message thread in Slack",
-//   inputSchema: {
-//     type: "object",
-//     properties: {
-//       channel_id: {
-//         type: "string",
-//         description: "The ID of the channel containing the thread",
-//       },
-//       thread_ts: {
-//         type: "string",
-//         description: "The timestamp of the parent message in the format '1234567890.123456'. Timestamps in the format without the period can be converted by adding the period such that 6 numbers come after it.",
-//       },
-//       text: {
-//         type: "string",
-//         description: "The reply text",
-//       },
-//     },
-//     required: ["channel_id", "thread_ts", "text"],
-//   },
-// };
 
 const addReactionTool: Tool = {
   name: "slack_add_reaction",
@@ -215,7 +201,7 @@ const getThreadRepliesTool: Tool = {
       },
       thread_ts: {
         type: "string",
-        description: "The timestamp of the parent message in the format '1234567890.123456'. Timestamps in the format without the period can be converted by adding the period such that 6 numbers come after it.",
+        description: "The timestamp of the parent message (e.g., '1234567890.123456')",
       },
     },
     required: ["channel_id", "thread_ts"],
@@ -517,7 +503,7 @@ async function main() {
             }
             const response = await slackClient.postReply(
               args.channel_id,
-              args.thread_ts,
+              normalizeTimestamp(args.thread_ts),
               args.text,
             );
             return {
@@ -535,7 +521,7 @@ async function main() {
             }
             const response = await slackClient.deleteMessage(
               args.channel_id,
-              args.timestamp,
+              normalizeTimestamp(args.timestamp),
             );
             return {
               content: [{ type: "text", text: JSON.stringify(response) }],
@@ -551,7 +537,7 @@ async function main() {
             }
             const response = await slackClient.addReaction(
               args.channel_id,
-              args.timestamp,
+              normalizeTimestamp(args.timestamp),
               args.reaction,
             );
             return {
@@ -584,7 +570,7 @@ async function main() {
             }
             const response = await slackClient.getThreadReplies(
               args.channel_id,
-              args.thread_ts,
+              normalizeTimestamp(args.thread_ts),
             );
             return {
               content: [{ type: "text", text: JSON.stringify(response) }],
