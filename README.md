@@ -102,16 +102,36 @@ npm run build
 
 ### Docker
 
-Build the Docker image:
+The Docker image is available on Docker Hub at: **[toqafelfel/mcp-slack](https://hub.docker.com/r/toqafelfel/mcp-slack)**
+
+#### Option 1: Pull from Docker Hub (Recommended - No Build Required)
+
+Simply pull the pre-built image:
 
 ```bash
-docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
+docker pull toqafelfel/mcp-slack:latest
 ```
 
-Run the container:
+This is the fastest way to get started! The image is ready to use immediately.
+
+#### Option 2: Build Locally
+
+If you prefer to build the image yourself:
 
 ```bash
-docker run -e SLACK_BOT_TOKEN=your_token -e SLACK_TEAM_ID=your_team_id tokamohsen/mcp-slack
+cd src/slack
+docker build -t toqafelfel/mcp-slack .
+```
+
+#### Running the Docker Container
+
+Once you have the image (either pulled or built), run it with:
+
+```bash
+docker run -i --rm \
+  -e SLACK_BOT_TOKEN=xoxb-your-bot-token \
+  -e SLACK_TEAM_ID=T01234567 \
+  toqafelfel/mcp-slack:latest
 ```
 
 ```json
@@ -129,7 +149,7 @@ docker run -e SLACK_BOT_TOKEN=your_token -e SLACK_TEAM_ID=your_team_id tokamohse
         "SLACK_TEAM_ID",
         "-e",
         "SLACK_CHANNEL_IDS",
-        "tokamohsen/mcp-slack"
+        "toqafelfel/mcp-slack"
       ],
       "env": {
         "SLACK_BOT_TOKEN": "xoxb-your-bot-token",

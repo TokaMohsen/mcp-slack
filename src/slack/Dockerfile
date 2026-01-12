@@ -1,25 +1,53 @@
 FROM node:22.12-alpine AS builder
 
-# Must be entire project because `prepare` script is run during `npm install` and requires all files.
-COPY src/slack /app
-COPY tsconfig.json /tsconfig.json
-
 WORKDIR /app
 
-RUN --mount=type=cache,target=/root/.npm npm install
+# Copy package files first for better caching
+COPY package*.json ./
+COPY tsconfig.docker.json ./tsconfig.json
 
-RUN --mount=type=cache,target=/root/.npm-production npm ci --ignore-scripts --omit-dev
+# Install dependencies (skip scripts to avoid premature build)
+RUN npm ci --ignore-scripts
 
+# Copy source code
+COPY index.ts ./
+
+# Build the project
+RUN npm run build
+
+# Production stage
 FROM node:22-alpine AS release
 
-COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/package.json /app/package.json
-COPY --from=builder /app/package-lock.json /app/package-lock.json
+# Add security labels
+LABEL maintainer="Toqa Mohsen" \
+      description="MCP server for interacting with Slack" \
+      version="0.1.0"
+
+# Create a non-root user and group
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs
+
+# Set working directory
+WORKDIR /app
+
+# Copy built files and dependencies with proper ownership
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
 
 ENV NODE_ENV=production
 
-WORKDIR /app
+# Install only production dependencies
+RUN npm ci --ignore-scripts --omit-dev && \
+    npm cache clean --force
 
-RUN npm ci --ignore-scripts --omit-dev
+# Switch to non-root user
+USER nodejs
+
+# Expose port if your MCP server uses one (adjust or remove if not needed)
+# EXPOSE 3000
+
+# Add healthcheck (optional - adjust based on your server's health endpoint)
+# HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+#   CMD node -e "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"
 
 ENTRYPOINT ["node", "dist/index.js"]

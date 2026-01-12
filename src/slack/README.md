@@ -99,7 +99,7 @@ MCP Server for the Slack API, enabling Claude to interact with Slack workspaces.
 
 Add the following to your `claude_desktop_config.json`:
 
-#### Using NPX 
+#### NPX
 
 ```json
 {
@@ -120,28 +120,7 @@ Add the following to your `claude_desktop_config.json`:
 }
 ```
 
-No installation required! NPX will automatically download and run the latest version.
-
-#### Using Node.js (For local development)
-
-First, clone and build the project:
-```bash
-git clone https://github.com/tokamohsen/mcp-slack.git
-cd mcp-slack/src/slack
-npm install
-npm run build
-```
-
-Replace `/absolute/path/to/mcp-slack` with the actual path where you cloned the repository.
-
-#### Docker
-
-Build the Docker image first:
-```bash
-docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
-```
-
-## Configuration Examples
+#### docker
 
 ```json
 {
@@ -158,7 +137,7 @@ docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
         "SLACK_TEAM_ID",
         "-e",
         "SLACK_CHANNEL_IDS",
-        "tokamohsen/mcp-slack"
+        "toqafelfel/mcp-slack"
       ],
       "env": {
         "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
@@ -170,23 +149,13 @@ docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
 }
 ```
 
-```json
-{
-  "mcpServers": {
-    "slack": {
-      "command": "node",
-      "args": [
-        "/absolute/path/to/mcp-slack/src/slack/dist/index.js"
-      ],
-      "env": {
-        "SLACK_BOT_TOKEN": "xoxb-your-bot-token",
-        "SLACK_TEAM_ID": "T01234567",
-        "SLACK_CHANNEL_IDS": "C01234567, C76543210"
-      }
-    }
-  }
-}
-```
+### Usage with VS Code
+
+Add the following JSON block to your User Settings (JSON) file in VS Code. You can do this by pressing `Ctrl + Shift + P` and typing `Preferences: Open Settings (JSON)`.
+
+Optionally, you can add it to a file called `.vscode/mcp.json` in your workspace. This will allow you to share the configuration with others.
+
+> Note that the `mcp` key is not needed in the `.vscode/mcp.json` file.
 
 #### Using NPX 
 
@@ -251,8 +220,8 @@ Then add to your VS Code settings:
     ],
     "servers": {
       "slack": {
-        "command": "node",
-        "args": ["/absolute/path/to/mcp-slack/src/slack/dist/index.js"],
+        "command": "npx",
+        "args": ["-y", "@tokamohsen/mcp-slack"],
         "env": {
           "SLACK_BOT_TOKEN": "${input:slack_bot_token}",
           "SLACK_TEAM_ID": "${input:slack_team_id}"
@@ -264,6 +233,49 @@ Then add to your VS Code settings:
 ```
 
 Replace `/absolute/path/to/mcp-slack` with the actual path where you cloned the repository.
+
+#### Docker
+
+First, pull the image from Docker Hub (recommended):
+```bash
+docker pull toqafelfel/mcp-slack:latest
+```
+
+Or build it locally:
+```bash
+docker build -t toqafelfel/mcp-slack -f src/slack/Dockerfile .
+```
+
+Then add to your VS Code settings:
+```json
+{
+  "mcp": {
+    "inputs": [
+      {
+        "type": "promptString",
+        "id": "slack_bot_token",
+        "description": "Slack Bot Token (starts with xoxb-)",
+        "password": true
+      },
+      {
+        "type": "promptString",
+        "id": "slack_team_id",
+        "description": "Slack Team ID (starts with T)"
+      }
+    ],
+    "servers": {
+      "slack": {
+        "command": "docker",
+        "args": ["run", "-i", "--rm", "toqafelfel/mcp-slack"],
+        "env": {
+          "SLACK_BOT_TOKEN": "${input:slack_bot_token}",
+          "SLACK_TEAM_ID": "${input:slack_team_id}"
+        }
+      }
+    }
+  }
+}
+```
 
 ### Environment Variables
 
@@ -289,10 +301,38 @@ npm install
 npm run build
 ```
 
-### Docker Build
+### Docker
+
+The Docker image is available on Docker Hub at: **[toqafelfel/mcp-slack](https://hub.docker.com/r/toqafelfel/mcp-slack)**
+
+#### Option 1: Pull from Docker Hub (Recommended - No Build Required)
+
+Simply pull the pre-built image:
 
 ```bash
-docker build -t tokamohsen/mcp-slack -f src/slack/Dockerfile .
+docker pull toqafelfel/mcp-slack:latest
+```
+
+This is the fastest way to get started! The image is ready to use immediately.
+
+#### Option 2: Build Locally
+
+If you prefer to build the image yourself:
+
+```bash
+cd src/slack
+docker build -t toqafelfel/mcp-slack .
+```
+
+#### Running the Docker Container
+
+Once you have the image (either pulled or built), run it with:
+
+```bash
+docker run -i --rm \
+  -e SLACK_BOT_TOKEN=xoxb-your-bot-token \
+  -e SLACK_TEAM_ID=T01234567 \
+  toqafelfel/mcp-slack:latest
 ```
 
 ## License
