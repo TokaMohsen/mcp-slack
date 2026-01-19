@@ -119,7 +119,7 @@ This is the fastest way to get started! The image is ready to use immediately.
 If you prefer to build the image yourself:
 
 ```bash
-cd src/slack
+cd "$PROJECT_DIR"/src/slack
 docker build -t toqafelfel/mcp-slack .
 ```
 

@@ -1,6 +1,6 @@
 FROM node:22.12-alpine AS builder
 
-WORKDIR /app
+WORKDIR /build
 
 # Copy package files first for better caching
 COPY package*.json ./
@@ -19,7 +19,7 @@ RUN npm run build
 FROM node:22-alpine AS release
 
 # Add security labels
-LABEL maintainer="Toqa Mohsen" \
+LABEL maintainer="MCP Slack Server" \
       description="MCP server for interacting with Slack" \
       version="0.1.0"
 
@@ -31,8 +31,8 @@ RUN addgroup -g 1001 -S nodejs && \
 WORKDIR /app
 
 # Copy built files and dependencies with proper ownership
-COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
-COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
+COPY --from=builder --chown=nodejs:nodejs /build/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /build/package*.json ./
 
 ENV NODE_ENV=production
 
